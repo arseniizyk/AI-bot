@@ -2,6 +2,8 @@ package llm
 
 import (
 	"context"
+	"strings"
+	"time"
 
 	pb "github.com/arseniizyk/AI-bot/proto"
 	"github.com/sashabaranov/go-openai"
@@ -21,6 +23,8 @@ func New(c *openai.Client, logger *zap.SugaredLogger) *OpenAIClient {
 }
 
 func (l *OpenAIClient) Ask(req *pb.ChatHistoryRequest) (string, error) {
+	l.logger.Debug("Preparing messages")
+
 	var messages []openai.ChatCompletionMessage
 
 	for _, m := range req.Messages {
@@ -35,11 +39,32 @@ func (l *OpenAIClient) Ask(req *pb.ChatHistoryRequest) (string, error) {
 		})
 	}
 
+	l.logger.Debug("Message prepared")
+
+	n := 1
+
+createChat:
 	resp, err := l.c.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
 		Model:    req.Model,
 		Messages: messages,
 	})
 	if err != nil {
+		if n > 5 {
+			l.logger.Error("Too many retries", "retries", n)
+			return "", err
+		}
+
+		if strings.Contains(err.Error(), "429") {
+			l.logger.Warnw("Too many requests",
+				"error", err,
+				"model", req.Model,
+				"try", n,
+			)
+			time.Sleep(3 * time.Duration(n) * time.Second)
+			n++
+			goto createChat
+		}
+
 		l.logger.Errorw("ChatCompletion error",
 			"messages", messages,
 			"error", err,

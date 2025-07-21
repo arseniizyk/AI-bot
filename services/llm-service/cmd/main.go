@@ -24,6 +24,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	logger.Info("Logger started")
+
 	cfg := openai.DefaultConfig(os.Getenv("OPENROUTER_API"))
 	cfg.BaseURL = "https://openrouter.ai/api/v1"
 
@@ -31,7 +33,9 @@ func main() {
 	grpcServer := grpc.NewServer()
 	pb.RegisterLLMServiceServer(grpcServer, service.New(llmClient))
 
+	logger.Info("gRPC LLM Service registered")
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatal(err)
 	}
+
 }
