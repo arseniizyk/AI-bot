@@ -25,7 +25,7 @@ func New(token string, logger *zap.SugaredLogger, conn *grpc.ClientConn, rdb *re
 	return &Bot{
 		token:  token,
 		logger: logger,
-		uc:     usecase.New(userRepo, conn),
+		uc:     usecase.New(userRepo, conn, logger),
 	}
 }
 
@@ -48,7 +48,8 @@ func (b *Bot) Init() error {
 
 func (b *Bot) Run() {
 	b.b.Handle("/start", func(ctx telebot.Context) error {
-		return ctx.Send("Hello, I'm AI bot, choose what AI you wanna use")
+		ctx.Send("Hello, I'm AI bot, choose what AI you wanna use")
+		return SelectKeyboard(ctx)
 	})
 
 	b.b.Handle("/ai", func(ctx telebot.Context) error {

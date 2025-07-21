@@ -24,6 +24,7 @@ func main() {
 		)
 		log.Fatal(err)
 	}
+	logger.Info("gRPC connection success")
 	defer conn.Close()
 
 	rdb := redis.NewClient(&redis.Options{
@@ -31,6 +32,13 @@ func main() {
 		Password: os.Getenv("REDIS_PASSWORD"),
 		DB:       0,
 	})
+	cmd := rdb.Ping()
+	if cmd.Err() != nil {
+		logger.Error("Redis connection error", zap.Error(err))
+		log.Fatal(err)
+	}
+
+	logger.Info("Redis connection success")
 
 	b := bot.New(os.Getenv("TELEGRAM_API"), logger.Sugar(), conn, rdb)
 	if err := b.Init(); err != nil {
@@ -39,5 +47,6 @@ func main() {
 			"err", err,
 		)
 	}
+	
 	b.Run()
 }
