@@ -1,0 +1,29 @@
+syntax = "proto3";
+package llm;
+
+option go_package = "github.com/arseniizyk/AI-bot/proto/llm;pb";
+
+message User {
+    string username = 1;
+}
+
+message ChatMessage {
+    string role = 1;
+    string content = 2;
+}
+
+message ChatHistoryRequest {
+    User user = 1;
+    string model = 2;
+    repeated ChatMessage messages = 3;
+}
+
+
+message TextResponse {
+    string answer = 1;
+}
+
+service LLMService {
+    rpc GenerateText(ChatHistoryRequest) returns(TextResponse);
+}
+

@@ -1,0 +1,45 @@
+services:
+    chat-bot:
+        build:
+            context: .
+            dockerfile: services/chat-bot/Dockerfile
+        container_name: chat-bot
+        command: ./chat-bot
+        env_file:
+            - ./services/chat-bot/.env
+        depends_on:
+            - llm-service
+        ports:
+            - '8081:8081'
+
+    llm-service:
+        build:
+            context: .
+            dockerfile: services/llm-service/Dockerfile
+        container_name: llm-service
+        command: ./llm-service
+        env_file:
+            - ./services/llm-service/.env
+        depends_on:
+            redis:
+                condition: service_healthy
+        ports:
+            - '${GRPC_PORT:-50051}:${GRPC_PORT:-50051}'
+
+    redis:
+        image: redis:alpine
+        container_name: redis
+        ports:
+            - '${REDIS_PORT:-6379}:${REDIS_PORT:-6379}'
+        volumes:
+            - ./redis.conf:/usr/local/etc/redis/redis.conf
+            - redis-data:/data
+        command: ['redis-server', '/usr/local/etc/redis/redis.conf']
+        healthcheck:
+            test: ['CMD', 'redis-cli', '-a', 'password', 'ping']
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+volumes:
+    redis-data:
