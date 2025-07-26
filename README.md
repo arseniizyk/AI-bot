@@ -23,7 +23,7 @@ Create `.env` files inside both `chat-bot/` and `llm-service/` directories based
 ### 3. Run the services with Docker Compose
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
 ## 📡 Protocol Buffers
@@ -35,11 +35,11 @@ All proto definitions are located in the `proto/` directory:
 
 To regenerate:
 
+```bash
 protoc --go_out=. --go_opt=paths=source_relative \  
        --go-grpc_out=. --go-grpc_opt=paths=source_relative \  
        llm.proto
-
----
+```
 
 ## 🧠 Technologies Used
 
