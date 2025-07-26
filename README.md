@@ -60,6 +60,9 @@ The `docker-compose.yml` mounts this configuration automatically if present.
 
 ---
 
+## 🔨 TODO:
+Interaction with images, processing and transferring them to the LLM
+
 ## 📬 License
 
 This project is licensed under the MIT License.
