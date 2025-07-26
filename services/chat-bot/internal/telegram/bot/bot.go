@@ -31,8 +31,9 @@ func New(token string, logger *zap.SugaredLogger, conn *grpc.ClientConn, rdb *re
 
 func (b *Bot) Init() error {
 	pref := telebot.Settings{
-		Token:  b.token,
-		Poller: &telebot.LongPoller{Timeout: 10 * time.Second},
+		Token:     b.token,
+		Poller:    &telebot.LongPoller{Timeout: 10 * time.Second},
+		ParseMode: telebot.ModeMarkdownV2,
 	}
 
 	bot, err := telebot.NewBot(pref)

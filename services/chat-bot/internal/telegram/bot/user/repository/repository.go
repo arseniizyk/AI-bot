@@ -13,7 +13,7 @@ type UserRepository struct {
 	rdb *redis.Client
 }
 
-const maxHistory = 10
+const maxHistory = 25
 
 func New(rdb *redis.Client) *UserRepository {
 	return &UserRepository{

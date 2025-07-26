@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	pb "github.com/arseniizyk/AI-bot/proto"
+	"github.com/arseniizyk/AI-bot/services/chat-bot/internal/telegram/bot/formatter"
 	"github.com/arseniizyk/AI-bot/services/chat-bot/internal/telegram/bot/user/repository"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -70,7 +71,7 @@ func (uc *userUsecase) AskLLM(ctx telebot.Context) error {
 		Content: resp.Answer,
 	})
 
-	return ctx.Send(resp.Answer)
+	return ctx.Send(formatter.PreparyForReply(resp.Answer))
 }
 
 func (uc *userUsecase) ClearConversation(ctx telebot.Context) error {
